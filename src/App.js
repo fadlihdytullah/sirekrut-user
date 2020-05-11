@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment } from "react";
+import "antd/dist/antd.css";
+import AppBar from "./layouts/AppBar";
+import { Layout } from "antd";
+import { Switch, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import PeriodeDetail from "./pages/PeriodeDetail";
+import Submission from "./pages/Submission";
+
+const { Content } = Layout;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <AppBar />
+      <div
+        style={{
+          marginTop: "24px",
+          maxWidth: "960px",
+          marginRight: "auto",
+          marginLeft: "auto",
+        }}
+      >
+        <Content>
+          <Switch>
+            <Route exact path="/">
+              <Home />
+            </Route>
+
+            <Route exact path="/periode/:id">
+              <PeriodeDetail />
+            </Route>
+
+            <Route exact path="/submission">
+              <Submission />
+            </Route>
+          </Switch>
+        </Content>
+      </div>
+    </Fragment>
   );
 }
-
 export default App;
