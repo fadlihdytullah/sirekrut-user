@@ -6,6 +6,7 @@ import { Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import PeriodeDetail from "./pages/PeriodeDetail";
 import Submission from "./pages/Submission";
+import Success from "./pages/Success";
 
 const { Content } = Layout;
 
@@ -33,6 +34,10 @@ function App() {
 
             <Route exact path="/submission">
               <Submission />
+            </Route>
+
+            <Route exact path="/success">
+              <Success />
             </Route>
           </Switch>
         </Content>

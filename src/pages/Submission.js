@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Typography, Input, Radio, Avatar, Button } from "antd";
 import { useLocation } from "react-router-dom";
 import { UserOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
 
 const styles = {
   labelContainer: {
@@ -27,6 +28,7 @@ const FormElement = (props) => (
 
 function Submission(props) {
   const location = useLocation();
+  const history = useHistory();
 
   const { data } = location.state;
 
@@ -42,7 +44,9 @@ function Submission(props) {
         <Typography.Title level={2} style={{ marginBottom: 0 }}>
           Formulir Administrasi
         </Typography.Title>
-        <Button type="primary">Kirim Lamaran</Button>
+        <Button type="primary" onClick={() => history.push("/success")}>
+          Kirim Lamaran
+        </Button>
       </div>
 
       <div>
