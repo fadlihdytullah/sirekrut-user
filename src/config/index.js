@@ -1,5 +1,9 @@
 // @flow
 const BASE_URL = 'https://us-central1-si-rekrut.cloudfunctions.net/api'
+export const POSITIONS_API = {
+  getAll: `${BASE_URL}/positions`,
+  getSingle: (id: string) => `${BASE_URL}/positions/${id}`,
+}
 
 export const TIMELINES_API = {
   getAll: `${BASE_URL}/timelines`,
