@@ -7,7 +7,7 @@ export const POSITIONS_API = {
 
 export const TIMELINES_API = {
   getAll: `${BASE_URL}/timelines`,
-  getSingle: (id: string) => `${BASE_URL}/study_programs/${id}`,
+  getSingle: (id: string) => `${BASE_URL}/timelines/${id}`,
 }
 
 const AUTH_TOKEN =
