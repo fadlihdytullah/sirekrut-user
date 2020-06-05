@@ -1,50 +1,26 @@
-import React, { Fragment } from "react";
-import PositionItem from "./PositionItem";
+import React, { Fragment } from 'react'
+import { capitalize } from '../utils'
+import PositionItem from './PositionItem'
 
-function PositionList() {
+function PositionList(props) {
   return (
     <Fragment>
-      <PositionItem
-        data={{
-          title: "Staff IT Sisfo",
-          minimumGPA: 3.0,
-          minimumGraduation: "Diploma",
-        }}
-      />
-
-      <PositionItem
-        data={{
-          title: "Staff Admin LAK",
-          minimumGPA: 2.5,
-          minimumGraduation: "Diploma",
-        }}
-      />
-
-      <PositionItem
-        data={{
-          title: "Lead Web Developer SISFO",
-          minimumGPA: 3.0,
-          minimumGraduation: "Sarjana",
-        }}
-      />
-
-      <PositionItem
-        data={{
-          title: "Staff Admin LAC",
-          minimumGPA: 3.0,
-          minimumGraduation: "Diploma",
-        }}
-      />
-
-      <PositionItem
-        data={{
-          title: "Lab Assistant FIT",
-          minimumGPA: 3.0,
-          minimumGraduation: "Diploma",
-        }}
-      />
+      {props.data &&
+        props.data.map(data => (
+          <PositionItem
+            key={data.id}
+            data={{
+              id: data.id,
+              title: data.name,
+              minimumGPA: data.minimumGPA,
+              minimumGraduation: capitalize(data.minimumGraduate),
+              details: data.details,
+              studyPrograms: data.studyPrograms,
+            }}
+          />
+        ))}
     </Fragment>
-  );
+  )
 }
 
-export default PositionList;
+export default PositionList

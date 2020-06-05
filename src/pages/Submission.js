@@ -1,50 +1,174 @@
-import React, { Fragment } from "react";
-import { Typography, Input, Radio, Avatar, Button } from "antd";
-import { useLocation } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons";
-import { useHistory } from "react-router-dom";
-
+import React, { Fragment } from 'react'
+import { Typography, Input, Radio, Avatar, Button, message, Upload, Select } from 'antd'
+import { useLocation } from 'react-router-dom'
+import { UserOutlined, UploadOutlined } from '@ant-design/icons'
+import { useHistory } from 'react-router-dom'
+import { SUBMISSIONS_API, FORM_CONF_API, config } from '../config'
+import axios from 'axios'
 const styles = {
   labelContainer: {
-    width: "150px",
+    width: '150px',
   },
   fullWidth: {
-    width: "100%",
+    width: '100%',
   },
-};
+}
 
-const FormElement = (props) => (
+const { Option } = Select
+const FormElement = props => (
   <div
     style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginBottom: 16,
     }}
   >
     {props.children}
   </div>
-);
+)
+
+const initFormData = () => ({
+  fullName: '',
+  email: '',
+  address: '',
+  originFrom: '',
+  dateOfBirth: '',
+  gender: '',
+  phoneNumber: '',
+  lastEducation: '',
+  toeflScore: 0,
+  toeflFile: null,
+  _360Score: 0,
+  _360File: null,
+  cvFile: null,
+  profilePicture: '',
+  score: {
+    academicScore: 0,
+    psikotesScore: 0,
+    interviewScore: 0,
+  },
+  passed: false,
+  positionId: '',
+})
+
+const showFormInit = () => ({
+  showToefl: false,
+  show360: false,
+})
 
 function Submission(props) {
-  const location = useLocation();
-  const history = useHistory();
+  const [formData, setFormData] = React.useState(initFormData())
+  const [showForm, setShowForm] = React.useState(showFormInit())
+  const [previewImage, setPreviewImage] = React.useState(null)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const { data } = location.state;
+  const location = useLocation()
+  const history = useHistory()
+  const { data } = location.state
 
+  const handleChangeInput = (event: SyntheticInputEvent<>) => {
+    const name = event.target && event.target.name
+    const value = event.target && event.target.value
+
+    setFormData(state => ({
+      ...state,
+      [name]: value,
+    }))
+  }
+
+  const inputHandler = e => {
+    console.log(e.file.originFileObj, 'asdsad')
+    setPreviewImage(URL.createObjectURL(e.file.originFileObj))
+    // if (e.target.files[0].name.match(/\.(jpg|jpeg|png|gif)$/)) {
+    //   if (e.target.files[0].size > 2097152) {
+    //     message('Upps, your file is too big, maximum filesize 2 Mb')
+    //   } else {
+    //     setPreviewImage(URL.createObjectURL(e.target.files[0]))
+    //     setFormData(state => ({
+    //       ...state,
+    //       profilePicture: e.target.files[0],
+    //     }))
+    //   }
+    // } else {
+    //   message('Upps, only file jpg, jpeg, png, and gif allowed')
+    // }
+  }
+
+  const handleSubmit = async isEdit => {
+    console.log(formData, 'INI DATA')
+    try {
+      setIsSubmitting(true)
+
+      const URL = SUBMISSIONS_API.post
+      const method = 'post'
+
+      const response = await axios[method](URL, formData, {
+        headers: config.headerConfig,
+      })
+
+      const result = response.data
+      console.log(result, 'ASIAAPPpp')
+      if (isSubmitting) {
+        message.loading('Loading', 0)
+      }
+      if (result.success) {
+        history.push('/success')
+        // handleFetchStudyPrograms();
+        // setShowModal(false);
+      } else {
+        throw new Error(result.errors)
+      }
+    } catch (error) {
+      if (error.response) {
+        setIsSubmitting(false)
+        message.error(error.response.data.errors)
+      } else {
+        message.error(error.message)
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleFetchFormConfig = async () => {
+    try {
+      const response = await axios.get(FORM_CONF_API.getConfig)
+      const result = response.data
+      console.log(result, 'AWW')
+      if (result.success) {
+        setShowForm(state => ({
+          ...state,
+          ...result.data,
+        }))
+      } else {
+        throw new Error(result.errors)
+      }
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
+
+  React.useEffect(() => {
+    handleFetchFormConfig()
+    setFormData(state => ({
+      ...state,
+      positionId: location.state.data.positionID,
+    }))
+  }, [])
   return (
     <Fragment>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}
       >
         <Typography.Title level={2} style={{ marginBottom: 0 }}>
           Formulir Administrasi
         </Typography.Title>
-        <Button type="primary" onClick={() => history.push("/success")}>
+        <Button type='primary' onClick={handleSubmit} disabled={isSubmitting}>
           Kirim Lamaran
         </Button>
       </div>
@@ -52,28 +176,28 @@ function Submission(props) {
       <div>
         <div>
           <Typography.Text strong>Nama Periode: </Typography.Text>
-          <Typography.Text>{(data && data.periodName) || ""}</Typography.Text>
+          <Typography.Text>{(data && data.periodName) || ''}</Typography.Text>
         </div>
         <div>
           <Typography.Text strong>Nama Posisi: </Typography.Text>
-          <Typography.Text>{(data && data.positionName) || ""}</Typography.Text>
+          <Typography.Text>{(data && data.positionName) || ''}</Typography.Text>
         </div>
       </div>
 
-      <div style={{ display: "flex", flex: 1, marginTop: 16 }}>
-        <div style={{ width: "600px" }}>
+      <div style={{ display: 'flex', flex: 1, marginTop: 16 }}>
+        <div style={{ width: '600px' }}>
           <FormElement>
             <div style={styles.labelContainer}>
               <Typography.Text>Nama Lengkap</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='fullName'
+                placeholder={''}
+                value={formData.fullName}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -82,14 +206,14 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Email</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='email'
+                placeholder={''}
+                value={formData.email}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -98,14 +222,14 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Alamat</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='address'
+                placeholder={''}
+                value={formData.address}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -114,14 +238,14 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Asal</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='originFrom'
+                placeholder={''}
+                value={formData.originFrom}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -130,14 +254,14 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Tanggal Lahir</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='dateOfBirth'
+                placeholder={''}
+                value={formData.dateOfBirth}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -146,12 +270,11 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Jenis Kelamin</Typography.Text>
             </div>
-            <div
-              style={{ display: "flex", flex: 1 }}
-              flexJustifyContent="flex-start"
-            >
-              <Radio checked={true}>Laki-laki</Radio>
-              <Radio>Perempuan</Radio>
+            <div style={{ display: 'flex', flex: 1 }} flexJustifyContent='flex-start'>
+              <Radio.Group name='gender' onChange={handleChangeInput}>
+                <Radio value={'Laki-laki'}>Laki-laki</Radio>
+                <Radio value={'Perempuan'}>Perempuan</Radio>
+              </Radio.Group>
             </div>
           </FormElement>
 
@@ -159,14 +282,14 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Telepon</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='phoneNumber'
+                placeholder={''}
+                value={formData.phoneNumber}
                 allowClear={true}
-                onChange={() => {}}
+                onChange={handleChangeInput}
               />
             </div>
           </FormElement>
@@ -175,82 +298,102 @@ function Submission(props) {
             <div style={styles.labelContainer}>
               <Typography.Text>Pendidikan Terakhir</Typography.Text>
             </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
+            <div style={{ display: 'flex', flex: 1 }}>
+              <Select
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
-                allowClear={true}
-                onChange={() => {}}
-              />
-            </div>
-          </FormElement>
-
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Nilai TOEFL</Typography.Text>
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
+                placeholder='Pilih pendidikan terakhir'
+                onChange={value => {
+                  setFormData(state => ({
+                    ...state,
+                    lastEducation: value,
+                  }))
+                }}
+                name='lastEducation'
+              >
+                {config.app.strataOptions.map(data => (
+                  <Option value={data.value} key={data.key}>
+                    {data.label}
+                  </Option>
+                ))}
+              </Select>
+              {/* <Input
                 style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
+                name='lastEducation'
+                placeholder={''}
+                value={formData.lastEducation}
                 allowClear={true}
-                onChange={() => {}}
-              />
+                onChange={handleChangeInput}
+              /> */}
             </div>
           </FormElement>
 
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Buktu TOEFL</Typography.Text>
-            </div>
-            <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
-              <div>
-                <Button>Upload</Button>
-              </div>
-              <Typography.Text type="danger">
-                * Hanya menerima sertifikat TOEFL/IELTS Telkom
-              </Typography.Text>
-            </div>
-          </FormElement>
+          {showForm.showToefl && (
+            <>
+              {' '}
+              <FormElement>
+                <div style={styles.labelContainer}>
+                  <Typography.Text>Nilai TOEFL</Typography.Text>
+                </div>
+                <div style={{ display: 'flex', flex: 1 }}>
+                  <Input
+                    style={styles.fullWidth}
+                    name='toeflScore'
+                    placeholder={''}
+                    value={formData.toeflScore}
+                    allowClear={true}
+                    onChange={handleChangeInput}
+                  />
+                </div>
+              </FormElement>
+              <FormElement>
+                <div style={styles.labelContainer}>
+                  <Typography.Text>Buktu TOEFL</Typography.Text>
+                </div>
+                <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+                  <div>
+                    <Button>Upload</Button>
+                  </div>
+                  <Typography.Text type='danger'>* Hanya menerima sertifikat TOEFL/IELTS Telkom</Typography.Text>
+                </div>
+              </FormElement>
+            </>
+          )}
 
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Nilai Tes 360</Typography.Text>
-            </div>
-            <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
-              <Input
-                style={styles.fullWidth}
-                name="name"
-                placeholder={""}
-                value={""}
-                allowClear={true}
-                onChange={() => {}}
-              />
-              <Typography.Text type="danger">* Jika ada</Typography.Text>
-            </div>
-          </FormElement>
+          {showForm.show360 && (
+            <>
+              <FormElement>
+                <div style={styles.labelContainer}>
+                  <Typography.Text>Nilai Tes 360</Typography.Text>
+                </div>
+                <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+                  <Input style={styles.fullWidth} name='name' placeholder={''} value={''} allowClear={true} onChange={() => {}} />
+                  <Typography.Text type='danger'>* Jika ada</Typography.Text>
+                </div>
+              </FormElement>
 
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Buktu Tes 360</Typography.Text>
-            </div>
-            <div style={{ display: "flex", flex: 1, flexDirection: "column" }}>
-              <div>
-                <Button>Upload</Button>
-              </div>
-              <Typography.Text type="danger">* Jika ada</Typography.Text>
-            </div>
-          </FormElement>
+              <FormElement>
+                <div style={styles.labelContainer}>
+                  <Typography.Text>Buktu Tes 360</Typography.Text>
+                </div>
+                <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+                  <div>
+                    <Button>Upload</Button>
+                  </div>
+                  <Typography.Text type='danger'>* Jika ada</Typography.Text>
+                </div>
+              </FormElement>
+            </>
+          )}
         </div>
-        <div style={{ marginLeft: 24, width: "150px" }}>
-          <div style={{ width: "150" }}>
-            <Avatar icon={<UserOutlined />} shape="square" size={150} />
+        <div style={{ marginLeft: 24, width: '150px' }}>
+          <div style={{ width: '150' }}>
+            <Avatar icon={<UserOutlined />} src={previewImage ? previewImage : null} shape='square' size={150} />
             <div style={{ marginTop: 8 }}>
-              <Button block>Upload Photo</Button>
+              <Upload name='logo' action='/upload.do' listType='picture' onChange={inputHandler}>
+                <Button>
+                  <UploadOutlined /> Upload Foto
+                </Button>
+              </Upload>
             </div>
           </div>
 
@@ -261,7 +404,7 @@ function Submission(props) {
         </div>
       </div>
     </Fragment>
-  );
+  )
 }
 
-export default Submission;
+export default Submission
