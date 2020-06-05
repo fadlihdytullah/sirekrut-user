@@ -99,8 +99,8 @@ function PositionItem(props) {
                 data: {
                   periodID: 'izxc78dsax2',
                   periodName: 'Rekrutasi Staff',
-                  positionID: '34zcas34',
-                  positionName: 'Staff IT Sisfo',
+                  positionID: props.data.id,
+                  positionName: props.data.title,
                 },
               },
             }}

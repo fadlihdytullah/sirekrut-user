@@ -10,6 +10,7 @@ function PositionList(props) {
           <PositionItem
             key={data.id}
             data={{
+              id: data.id,
               title: data.name,
               minimumGPA: data.minimumGPA,
               minimumGraduation: capitalize(data.minimumGraduate),
