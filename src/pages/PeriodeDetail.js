@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import axios from 'axios'
-import { message, Empty, Skeleton } from 'antd'
+import { message, Empty, Skeleton, Alert } from 'antd'
 import { useHistory, useParams, useLocation } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import PositionList from './PositionList'
@@ -13,6 +13,8 @@ function PeriodeDetail() {
   const history = useHistory()
   const params = useParams()
   const location = useLocation()
+  const today = new Date().setHours(0, 0, 0, 0)
+  const endDate = new Date(location.state.endData).setHours(0, 0, 0, 0)
 
   const handleFetchTimelineDetails = async () => {
     try {
@@ -52,6 +54,8 @@ function PeriodeDetail() {
 
   React.useEffect(
     () => {
+      console.log(today, 'this is today')
+      console.log(endDate, 'this is')
       handleFetchTimelineDetails()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,7 +70,14 @@ function PeriodeDetail() {
       ) : !appState.positions.length ? (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
-        <PositionList data={appState.positions} periode={location.state.periode} />
+        <>
+          {today > endDate ? (
+            <div style={{ marginTop: 15, marginBottom: 20 }}>
+              <Alert message={`Periode ini telah berakhir pada tanggal ${formatDate(location.state.endData)}`} type='warning' />
+            </div>
+          ) : null}
+          <PositionList disableButton={today > endDate} data={appState.positions} periode={location.state.periode} />
+        </>
       )}
     </Fragment>
   )
