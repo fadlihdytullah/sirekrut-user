@@ -74,6 +74,7 @@ function Home() {
                     pathname: `/periode/${data.id}`,
                     state: {
                       periode: data.id,
+                      endData: data.endDate,
                     },
                   }}
                 >
