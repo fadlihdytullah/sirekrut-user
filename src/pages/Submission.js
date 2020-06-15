@@ -3,7 +3,10 @@ import { Typography, Input, Radio, Avatar, Button, message, Upload, Select } fro
 import { useLocation } from 'react-router-dom'
 import { UserOutlined, UploadOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
-import { SUBMISSIONS_API, FORM_CONF_API, config } from '../config'
+import firebase from 'firebase'
+
+import { SUBMISSIONS_API, FORM_CONF_API, config, auth } from '../config'
+
 import axios from 'axios'
 const styles = {
   labelContainer: {
@@ -50,6 +53,7 @@ const initFormData = () => ({
   },
   passed: false,
   positionId: '',
+  periodId: '',
 })
 
 const showFormInit = () => ({
@@ -76,9 +80,28 @@ function Submission(props) {
       [name]: value,
     }))
   }
+  const inputHandlerFile = (e, fileTypeName) => {
+    const fileData = e.file.originFileObj
+    firebase
+      .storage()
+      .ref(`${fileTypeName}/${fileData.uid}-${fileData.name}`)
+      .put(fileData)
+      .then(snapshot => snapshot.ref.getDownloadURL())
+      .then(url => {
+        setFormData(state => ({
+          ...state,
+          [fileTypeName]: url,
+        }))
+      })
+      .catch(error => {
+        console.log(error, 'this error from submission')
+      })
+  }
 
-  const inputHandler = e => {
+  const inputHandlerPicture = e => {
     console.log(e.file.originFileObj, 'asdsad')
+    const fileData = e.file.originFileObj
+    uploadFilePicture(fileData)
     setPreviewImage(URL.createObjectURL(e.file.originFileObj))
     // if (e.target.files[0].name.match(/\.(jpg|jpeg|png|gif)$/)) {
     //   if (e.target.files[0].size > 2097152) {
@@ -93,6 +116,23 @@ function Submission(props) {
     // } else {
     //   message('Upps, only file jpg, jpeg, png, and gif allowed')
     // }
+  }
+
+  const uploadFilePicture = async file => {
+    firebase
+      .storage()
+      .ref(`userPic/${file.uid}-${file.name}`)
+      .put(file)
+      .then(snapshot => snapshot.ref.getDownloadURL())
+      .then(url => {
+        setFormData(state => ({
+          ...state,
+          profilePicture: url,
+        }))
+      })
+      .catch(error => {
+        console.log(error, 'this error from submission')
+      })
   }
 
   const handleSubmit = async isEdit => {
@@ -154,6 +194,7 @@ function Submission(props) {
     setFormData(state => ({
       ...state,
       positionId: location.state.data.positionID,
+      periodId: location.state.data.periodID,
     }))
   }, [])
   return (
@@ -347,11 +388,13 @@ function Submission(props) {
               </FormElement>
               <FormElement>
                 <div style={styles.labelContainer}>
-                  <Typography.Text>Buktu TOEFL</Typography.Text>
+                  <Typography.Text>Bukti TOEFL</Typography.Text>
                 </div>
                 <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
                   <div>
-                    <Button>Upload</Button>
+                    <Upload accept='.pdf' name='toeflFile' onChange={e => inputHandlerFile(e, 'toeflFile')}>
+                      <Button>Upload</Button>
+                    </Upload>
                   </div>
                   <Typography.Text type='danger'>* Hanya menerima sertifikat TOEFL/IELTS Telkom</Typography.Text>
                 </div>
@@ -366,18 +409,26 @@ function Submission(props) {
                   <Typography.Text>Nilai Tes 360</Typography.Text>
                 </div>
                 <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
-                  <Input style={styles.fullWidth} name='name' placeholder={''} value={''} allowClear={true} onChange={() => {}} />
+                  <Input
+                    style={styles.fullWidth}
+                    name='_360Score'
+                    value={formData._360Score}
+                    allowClear={true}
+                    onChange={handleChangeInput}
+                  />
                   <Typography.Text type='danger'>* Jika ada</Typography.Text>
                 </div>
               </FormElement>
 
               <FormElement>
                 <div style={styles.labelContainer}>
-                  <Typography.Text>Buktu Tes 360</Typography.Text>
+                  <Typography.Text>Bukti Tes 360</Typography.Text>
                 </div>
                 <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
                   <div>
-                    <Button>Upload</Button>
+                    <Upload accept='.pdf' name='_360File' onChange={e => inputHandlerFile(e, '_360File')}>
+                      <Button>Upload</Button>
+                    </Upload>
                   </div>
                   <Typography.Text type='danger'>* Jika ada</Typography.Text>
                 </div>
@@ -389,7 +440,7 @@ function Submission(props) {
           <div style={{ width: '150' }}>
             <Avatar icon={<UserOutlined />} src={previewImage ? previewImage : null} shape='square' size={150} />
             <div style={{ marginTop: 8 }}>
-              <Upload name='logo' action='/upload.do' listType='picture' onChange={inputHandler}>
+              <Upload name='picture' accept='image/*' onChange={inputHandlerPicture}>
                 <Button>
                   <UploadOutlined /> Upload Foto
                 </Button>
@@ -399,7 +450,9 @@ function Submission(props) {
 
           <div style={{ marginTop: 16 }}>
             <Typography.Text>Dokumen Lainnya</Typography.Text>
-            <Button block>Upload CV</Button>
+            <Upload accept='.pdf' name='picture' onChange={e => inputHandlerFile(e, 'cvFile')}>
+              <Button>Upload CV</Button>
+            </Upload>
           </div>
         </div>
       </div>

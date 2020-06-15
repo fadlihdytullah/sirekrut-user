@@ -1,4 +1,5 @@
 // @flow
+import Firebase from 'firebase'
 const BASE_URL = 'https://us-central1-si-rekrut.cloudfunctions.net/api'
 const LOCAL_BASE_URL = 'http://localhost:5001/si-rekrut/us-central1/api'
 export const POSITIONS_API = {
@@ -56,3 +57,20 @@ export const config = {
     ],
   },
 }
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyAPmjhe1mitIgs18AYcYNOF95KIM-8iWAA',
+  authDomain: 'si-rekrut.firebaseapp.com',
+  databaseURL: 'https://si-rekrut.firebaseio.com',
+  projectId: 'si-rekrut',
+  storageBucket: 'si-rekrut.appspot.com',
+  messagingSenderId: '375797560482',
+  appId: '1:375797560482:web:82ef40bd4ddc98ef4113fb',
+  measurementId: 'G-RJMNSJKF7N',
+}
+
+const appConfig = Firebase.initializeApp(firebaseConfig)
+
+export const auth = Firebase.auth()
+export const db = appConfig.database()
+export const time = Firebase.database.ServerValue.TIMESTAMP
