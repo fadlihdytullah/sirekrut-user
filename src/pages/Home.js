@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import { Typography, Button, message, Empty, Skeleton } from 'antd'
 import axios from 'axios'
 import Card from '../components/Card'
@@ -68,8 +68,17 @@ function Home() {
             </div>
 
             <div>
-              <Button type='dashed' href={`/periode/${data.id}`}>
-                Lihat Detail
+              <Button type='dashed'>
+                <Link
+                  to={{
+                    pathname: `/periode/${data.id}`,
+                    state: {
+                      periode: data.id,
+                    },
+                  }}
+                >
+                  Lihat Detail
+                </Link>
               </Button>
             </div>
           </Card>

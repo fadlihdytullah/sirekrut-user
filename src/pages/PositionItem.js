@@ -42,6 +42,11 @@ function PositionItem(props) {
         </div>
 
         <div style={{ display: 'flex' }}>
+          <div style={{ width: '200px' }}>Quota</div>
+          <div>: {props.data.quota}</div>
+        </div>
+
+        <div style={{ display: 'flex' }}>
           <div style={{ width: '200px' }}>Minimum Lulusan</div>
           <div>: {props.data.minimumGraduation}</div>
         </div>
@@ -65,6 +70,13 @@ function PositionItem(props) {
       <Card>
         <div style={{ width: '150px' }}>
           <Typography.Text strong>{props.data.title}</Typography.Text>
+        </div>
+
+        <div>
+          <Typography.Text type='secondary' style={{ fontSize: '.75rem', display: 'block' }}>
+            Quota
+          </Typography.Text>
+          <Typography.Text>{props.data.quota}</Typography.Text>
         </div>
 
         <div>
@@ -97,7 +109,7 @@ function PositionItem(props) {
               pathname: '/submission',
               state: {
                 data: {
-                  periodID: 'izxc78dsax2',
+                  periodID: props.data.periodeId,
                   periodName: 'Rekrutasi Staff',
                   positionID: props.data.id,
                   positionName: props.data.title,

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import axios from 'axios'
 import { message, Empty, Skeleton } from 'antd'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useParams, useLocation } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import PositionList from './PositionList'
 import { AppContext } from '../context/AppContext'
@@ -12,6 +12,7 @@ function PeriodeDetail() {
   const { appState, dispatchApp } = React.useContext(AppContext)
   const history = useHistory()
   const params = useParams()
+  const location = useLocation()
 
   const handleFetchTimelineDetails = async () => {
     try {
@@ -24,7 +25,7 @@ function PeriodeDetail() {
         const fetchPosition = async () => {
           const data = result.data.positions.map(async position => {
             const res = await axios.get(POSITIONS_API.getSingle(position.id))
-            return res.data.data
+            return { ...res.data.data, quota: position.quota }
           })
           const promiseDone = Promise.all(data)
           return promiseDone
@@ -65,7 +66,7 @@ function PeriodeDetail() {
       ) : !appState.positions.length ? (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
-        <PositionList data={appState.positions} />
+        <PositionList data={appState.positions} periode={location.state.periode} />
       )}
     </Fragment>
   )
