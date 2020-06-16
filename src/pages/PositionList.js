@@ -8,6 +8,7 @@ function PositionList(props) {
       {props.data &&
         props.data.map(data => (
           <PositionItem
+            disableButton={props.disableButton}
             key={data.id}
             data={{
               periodeId: props.periode,

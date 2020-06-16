@@ -30,7 +30,9 @@ function PositionItem(props) {
               },
             }}
           >
-            <Button type='primary'>Submit</Button>
+            <Button type='primary' disabled={props.disableButton}>
+              Submit
+            </Button>
           </Link>,
         ]}
         cancelText='Kembali'
@@ -117,7 +119,9 @@ function PositionItem(props) {
               },
             }}
           >
-            <Button type='primary'>Submit</Button>
+            <Button type='primary' disabled={props.disableButton}>
+              Submit
+            </Button>
           </Link>
         </div>
       </Card>
