@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import {
   Typography,
   Input,
@@ -15,12 +15,12 @@ import { UserOutlined, UploadOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import firebase from "firebase";
 
-import { SUBMISSIONS_API, FORM_CONF_API, config, auth } from "../config";
+import { SUBMISSIONS_API, FORM_CONF_API, config } from "../config";
 
 import axios from "axios";
 
 const regexName = /^[a-zA-Z ]*$/;
-const regexPhone = /^[0-9]*$/;
+const regexNumber = /^[0-9]*$/;
 
 const styles = {
   labelContainer: {
@@ -128,7 +128,7 @@ function Submission(props) {
   const handleChangeInputNumber = (event: SyntheticInputEvent<>) => {
     const value = event.target && event.target.value;
 
-    if (regexPhone.test(value)) {
+    if (regexNumber.test(value)) {
       setFormData((state) => ({
         ...state,
         phoneNumber: value,
@@ -302,6 +302,28 @@ function Submission(props) {
       ...state,
       dateOfBirth: dateString,
     }));
+  };
+
+  const handleChangeTOEFL = (event) => {
+    const value = event.target && event.target.value;
+
+    if (regexNumber.test(value)) {
+      setFormData((state) => ({
+        ...state,
+        toeflScore: value,
+      }));
+    }
+  };
+
+  const handleChange360Score = (event) => {
+    const value = event.target && event.target.value;
+
+    if (regexNumber.test(value)) {
+      setFormData((state) => ({
+        ...state,
+        _360Score: value,
+      }));
+    }
   };
 
   return (
@@ -547,7 +569,7 @@ function Submission(props) {
                     placeholder={""}
                     value={formData.toeflScore}
                     allowClear={true}
-                    onChange={handleChangeInput}
+                    onChange={handleChangeTOEFL}
                   />
                 </div>
               </FormElement>
@@ -590,7 +612,7 @@ function Submission(props) {
                     name="_360Score"
                     value={formData._360Score}
                     allowClear={true}
-                    onChange={handleChangeInput}
+                    onChange={handleChange360Score}
                   />
                   <Typography.Text type="danger">* Jika ada</Typography.Text>
                 </div>

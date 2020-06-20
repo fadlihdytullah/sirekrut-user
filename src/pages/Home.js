@@ -66,33 +66,27 @@ function Home() {
               </Typography.Text>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ marginRight: "40px" }}>
-                <Typography.Text>
-                  Tersedia {data.positions && data.positions.length} posisi
-                </Typography.Text>
-              </div>
+            <div>
+              <Typography.Text>
+                Tersedia {data.positions && data.positions.length} posisi
+              </Typography.Text>
+            </div>
 
-              <div>
-                <Button type="dashed">
-                  <Link
-                    to={{
-                      pathname: `/periode/${data.id}`,
-                      state: {
-                        periode: data.id,
-                      },
-                    }}
-                  >
-                    Lihat Detail
-                  </Link>
-                </Button>
-              </div>
+            <div>
+              <Button type="dashed">
+                <Link
+                  to={{
+                    pathname: `/periode/${data.id}`,
+                    state: {
+                      // data
+                      periode: data.id,
+                      endData: data.endDate,
+                    },
+                  }}
+                >
+                  Lihat Detail
+                </Link>
+              </Button>
             </div>
           </Card>
         ))
