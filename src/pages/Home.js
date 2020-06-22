@@ -77,11 +77,6 @@ function Home() {
                 <Link
                   to={{
                     pathname: `/periode/${data.id}`,
-                    state: {
-                      // data
-                      periode: data.id,
-                      endData: data.endDate,
-                    },
                   }}
                 >
                   Lihat Detail

@@ -10,11 +10,13 @@ import { formatDate } from "../utils";
 
 function PeriodeDetail() {
   const { appState, dispatchApp } = React.useContext(AppContext);
-  const history = useHistory();
+  const [data, setData] = React.useState({});
   const params = useParams();
   const location = useLocation();
   const today = new Date().setHours(0, 0, 0, 0);
-  const endDate = new Date(location.state.endData).setHours(0, 0, 0, 0);
+  const endDate = (data && new Date(data.endDate).setHours(0, 0, 0, 0)) || null;
+
+  console.log("ℹ️ data:=", data);
 
   const handleFetchTimelineDetails = async () => {
     try {
@@ -24,6 +26,7 @@ function PeriodeDetail() {
       const result = response.data;
 
       if (result.success) {
+        setData(result.data);
         const fetchPosition = async () => {
           const data = result.data.positions.map(async (position) => {
             const res = await axios.get(POSITIONS_API.getSingle(position.id));
@@ -34,7 +37,6 @@ function PeriodeDetail() {
         };
         const positionsData = await fetchPosition();
 
-        console.log(positionsData, "iniasdada");
         dispatchApp({
           type: "FETCH_POSITIONS_SUCCESS",
           payload: { positions: positionsData },
@@ -65,10 +67,15 @@ function PeriodeDetail() {
   return (
     <Fragment>
       <PageHeader
-        title="Rekrutmen Staff"
+        title={(data && data.title) || ""}
         subtitle={
           !appState.loading
-            ? `Tersedia ${appState.positions.length} posisi`
+            ? `Tersedia ${
+                (data &&
+                  Array.isArray(data.positions) &&
+                  data.positions.length) ||
+                0
+              } posisi`
             : null
         }
       />
@@ -81,9 +88,9 @@ function PeriodeDetail() {
           {today > endDate ? (
             <div style={{ marginTop: 15, marginBottom: 20 }}>
               <Alert
-                message={`Periode ini telah berakhir pada tanggal ${formatDate(
-                  location.state.endData
-                )}`}
+                message={`Periode ini telah berakhir pada tanggal ${
+                  (data && formatDate(data.endDate)) || ""
+                }`}
                 type="warning"
               />
             </div>
@@ -91,7 +98,7 @@ function PeriodeDetail() {
           <PositionList
             disableButton={today > endDate}
             data={appState.positions}
-            periode={location.state.periode}
+            periode={data && data.id}
           />
         </>
       )}
