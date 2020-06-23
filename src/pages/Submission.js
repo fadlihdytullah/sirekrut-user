@@ -110,6 +110,7 @@ function Submission(props) {
   const [previewImage, setPreviewImage] = React.useState(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formError, setFormError] = React.useState(initFormError());
+  const [isUploading, setIsUploading] = React.useState(false);
 
   const location = useLocation();
   const history = useHistory();
@@ -136,6 +137,7 @@ function Submission(props) {
     }
   };
   const inputHandlerFile = (e, fileTypeName) => {
+    setIsSubmitting(true);
     const fileData = e.file.originFileObj;
     firebase
       .storage()
@@ -147,14 +149,19 @@ function Submission(props) {
           ...state,
           [fileTypeName]: url,
         }));
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 2000);
       })
       .catch((error) => {});
   };
 
   const inputHandlerPicture = (e) => {
-    const fileData = e.file.originFileObj;
-    uploadFilePicture(fileData);
-    setPreviewImage(URL.createObjectURL(e.file.originFileObj));
+    try {
+      const fileData = e.file.originFileObj;
+      uploadFilePicture(fileData);
+      setPreviewImage(URL.createObjectURL(e.file.originFileObj));
+    } catch (error) {}
     // if (e.target.files[0].name.match(/\.(jpg|jpeg|png|gif)$/)) {
     //   if (e.target.files[0].size > 2097152) {
     //     message('Upps, your file is too big, maximum filesize 2 Mb')
@@ -171,6 +178,7 @@ function Submission(props) {
   };
 
   const uploadFilePicture = async (file) => {
+    setIsUploading(true);
     firebase
       .storage()
       .ref(`userPic/${file.uid}-${file.name}`)
@@ -181,6 +189,9 @@ function Submission(props) {
           ...state,
           profilePicture: url,
         }));
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 2000);
       })
       .catch((error) => {
         console.log(error, "this error from submission");
@@ -343,7 +354,11 @@ function Submission(props) {
         <Typography.Title level={2} style={{ marginBottom: 0 }}>
           Formulir Administrasi
         </Typography.Title>
-        <Button type="primary" htmlType="submit" disabled={isSubmitting}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          disabled={isSubmitting | isUploading}
+        >
           Kirim Lamaran
         </Button>
       </div>
