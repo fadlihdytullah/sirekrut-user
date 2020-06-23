@@ -137,7 +137,7 @@ function Submission(props) {
     }
   };
   const inputHandlerFile = (e, fileTypeName) => {
-    setIsSubmitting(true);
+    setIsUploading(true);
     const fileData = e.file.originFileObj;
     firebase
       .storage()
@@ -149,11 +149,13 @@ function Submission(props) {
           ...state,
           [fileTypeName]: url,
         }));
-        setTimeout(() => {
-          setIsSubmitting(false);
-        }, 2000);
       })
-      .catch((error) => {});
+      .catch((error) => {})
+      .finally(() => {
+        setTimeout(() => {
+          setIsUploading(false);
+        }, 2000);
+      });
   };
 
   const inputHandlerPicture = (e) => {
@@ -189,12 +191,14 @@ function Submission(props) {
           ...state,
           profilePicture: url,
         }));
-        setTimeout(() => {
-          setIsSubmitting(false);
-        }, 2000);
       })
       .catch((error) => {
         console.log(error, "this error from submission");
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsUploading(false);
+        }, 2000);
       });
   };
 
