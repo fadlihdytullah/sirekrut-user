@@ -66,13 +66,18 @@ function Home() {
               </Typography.Text>
             </div>
 
-            <div>
-              <Typography.Text>
-                Tersedia {data.positions && data.positions.length} posisi
-              </Typography.Text>
-            </div>
-
-            <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ marginRight: "40px" }}>
+                <Typography.Text>
+                  Tersedia {data.positions && data.positions.length} posisi
+                </Typography.Text>
+              </div>
               <Button type="dashed">
                 <Link
                   to={{
