@@ -19,7 +19,7 @@ import { SUBMISSIONS_API, FORM_CONF_API, config } from "../config";
 
 import axios from "axios";
 
-const regexName = /^[a-zA-Z ]*$/;
+const regexName = /^[a-zA-Z.- ]*$/;
 const regexNumber = /^[0-9]*$/;
 
 const styles = {
