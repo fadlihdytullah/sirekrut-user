@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Typography,
   Input,
@@ -202,71 +202,79 @@ function Submission(props) {
       });
   };
 
+  const validate = () => {
+    let isValid = true;
+
+    if (!formData.gender.length) {
+      setFormError((state) => ({
+        ...state,
+        gender: true,
+      }));
+      isValid = false;
+    }
+
+    if (formData.profilePicture === "") {
+      setFormError((state) => ({
+        ...state,
+        profilePicture: true,
+      }));
+
+      isValid = false;
+    }
+
+    if (formData.lastEducation === "") {
+      setFormError((state) => ({
+        ...state,
+        lastEducation: true,
+      }));
+      isValid = false;
+    }
+
+    if (!formData.dateOfBirth) {
+      setFormError((state) => ({
+        ...state,
+        dateOfBirth: true,
+      }));
+      isValid = false;
+    }
+
+    if (!formData.cvFile) {
+      setFormError((state) => ({
+        ...state,
+        cvFile: true,
+      }));
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async () => {
     setFormError(initFormError());
     try {
       setIsSubmitting(true);
 
-      if (!formData.gender.length) {
-        setFormError((state) => ({
-          ...state,
-          gender: true,
-        }));
+      if (!validate()) {
+        return;
       }
 
-      if (formData.profilePicture === "") {
-        setFormError((state) => ({
-          ...state,
-          profilePicture: true,
-        }));
+      const URL = SUBMISSIONS_API.post;
+      const method = "post";
+
+      const response = await axios[method](URL, formData, {
+        headers: config.headerConfig,
+      });
+
+      const result = response.data;
+      if (isSubmitting) {
+        message.loading("Loading", 0);
       }
-
-      if (formData.lastEducation === "") {
-        setFormError((state) => ({
-          ...state,
-          lastEducation: true,
-        }));
-      }
-
-      if (formData.dateOfBirth === "") {
-        setFormError((state) => ({
-          ...state,
-          dateOfBirth: true,
-        }));
-      }
-
-      if (!formData.cvFile) {
-        setFormError((state) => ({
-          ...state,
-          cvFile: true,
-        }));
-      }
-
-      if (
-        formData.gender.length &&
-        formData.profilePicture !== "" &&
-        formError.cvFile &&
-        formData.lastEducation !== "" &&
-        formData.dateOfBirth !== ""
-      ) {
-        const URL = SUBMISSIONS_API.post;
-        const method = "post";
-
-        const response = await axios[method](URL, formData, {
-          headers: config.headerConfig,
-        });
-
-        const result = response.data;
-        if (isSubmitting) {
-          message.loading("Loading", 0);
-        }
-        if (result.success) {
-          history.push("/success");
-          // handleFetchStudyPrograms();
-          // setShowModal(false);
-        } else {
-          throw new Error(result.errors);
-        }
+      if (result.success) {
+        history.push("/success");
+        // handleFetchStudyPrograms();
+        // setShowModal(false);
+      } else {
+        throw new Error(result.errors);
       }
     } catch (error) {
       if (error.response) {
@@ -342,227 +350,230 @@ function Submission(props) {
   };
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        handleSubmit();
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+    <Fragment>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
         }}
       >
-        <Typography.Title level={2} style={{ marginBottom: 0 }}>
-          Formulir Administrasi
-        </Typography.Title>
-        <Button
-          type="primary"
-          htmlType="submit"
-          disabled={isSubmitting | isUploading}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          Kirim Lamaran
-        </Button>
-      </div>
-
-      <div>
-        <div>
-          <Typography.Text strong>Nama Periode: </Typography.Text>
-          <Typography.Text>{(data && data.periodName) || ""}</Typography.Text>
-        </div>
-        <div>
-          <Typography.Text strong>Nama Posisi: </Typography.Text>
-          <Typography.Text>{(data && data.positionName) || ""}</Typography.Text>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flex: 1, marginTop: 16 }}>
-        <div style={{ width: "600px" }}>
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Nama Lengkap</Typography.Text>
-              <RedDot />
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
-                required
-                style={styles.fullWidth}
-                name="fullName"
-                placeholder={""}
-                value={formData.fullName}
-                allowClear={true}
-                onChange={handleChangeInput}
-                onKeyDown={handleKeyDownName}
-              />
-            </div>
-          </FormElement>
-
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Email</Typography.Text>
-              <RedDot />
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
-                required
-                style={styles.fullWidth}
-                name="email"
-                placeholder={""}
-                value={formData.email}
-                type="email"
-                allowClear={true}
-                onChange={handleChangeInput}
-              />
-            </div>
-          </FormElement>
-
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Alamat</Typography.Text>
-              <RedDot />
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
-                required
-                style={styles.fullWidth}
-                name="address"
-                placeholder={""}
-                value={formData.address}
-                allowClear={true}
-                onChange={handleChangeInput}
-              />
-            </div>
-          </FormElement>
-
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Asal</Typography.Text>
-              <RedDot />
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
-                required
-                style={styles.fullWidth}
-                name="originFrom"
-                placeholder={""}
-                value={formData.originFrom}
-                allowClear={true}
-                onChange={handleChangeInput}
-              />
-            </div>
-          </FormElement>
-
-          <FormElement
-            error={
-              formError.dateOfBirth ? (
-                <div style={{ marginBottom: "8px" }}>
-                  <Typography.Text type="danger">
-                    Input tanggal lahir terlebih dahulu
-                  </Typography.Text>
-                </div>
-              ) : (
-                <div />
-              )
-            }
+          <Typography.Title level={2} style={{ marginBottom: 0 }}>
+            Formulir Administrasi
+          </Typography.Title>
+          <Button
+            htmlType="submit"
+            type="primary"
+            disabled={isSubmitting | isUploading}
           >
-            <div style={styles.labelContainer}>
-              <Typography.Text>Tanggal Lahir</Typography.Text>
-              <RedDot />
-            </div>
+            Kirim Lamaran
+          </Button>
+        </div>
 
-            <div style={{ display: "flex", flex: 1 }}>
-              <DatePicker
-                style={styles.fullWidth}
-                onChange={handleChangeBirthDate}
-              />
-            </div>
-          </FormElement>
+        <div>
+          <div>
+            <Typography.Text strong>Nama Periode: </Typography.Text>
+            <Typography.Text>{(data && data.periodName) || ""}</Typography.Text>
+          </div>
+          <div>
+            <Typography.Text strong>Nama Posisi: </Typography.Text>
+            <Typography.Text>
+              {(data && data.positionName) || ""}
+            </Typography.Text>
+          </div>
+        </div>
 
-          <FormElement
-            error={
-              formError.gender ? (
-                <div>
-                  <Typography.Text type="danger">
-                    Jenis tidak boleh kosong
-                  </Typography.Text>
-                </div>
-              ) : (
-                <div />
-              )
-            }
-          >
-            <div style={styles.labelContainer}>
-              <Typography.Text>Jenis Kelamin</Typography.Text>
-              <RedDot />
-            </div>
-            <div
-              style={{ display: "flex", flex: 1 }}
-              flexJustifyContent="flex-start"
+        <div style={{ display: "flex", flex: 1, marginTop: 16 }}>
+          <div style={{ width: "600px" }}>
+            <FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Nama Lengkap</Typography.Text>
+                <RedDot />
+              </div>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Input
+                  required
+                  style={styles.fullWidth}
+                  name="fullName"
+                  placeholder={""}
+                  value={formData.fullName}
+                  allowClear={true}
+                  onChange={handleChangeInput}
+                  onKeyDown={handleKeyDownName}
+                />
+              </div>
+            </FormElement>
+
+            <FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Email</Typography.Text>
+                <RedDot />
+              </div>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Input
+                  required
+                  style={styles.fullWidth}
+                  name="email"
+                  placeholder={""}
+                  value={formData.email}
+                  type="email"
+                  allowClear={true}
+                  onChange={handleChangeInput}
+                />
+              </div>
+            </FormElement>
+
+            <FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Alamat</Typography.Text>
+                <RedDot />
+              </div>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Input
+                  required
+                  style={styles.fullWidth}
+                  name="address"
+                  placeholder={""}
+                  value={formData.address}
+                  allowClear={true}
+                  onChange={handleChangeInput}
+                />
+              </div>
+            </FormElement>
+
+            <FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Asal</Typography.Text>
+                <RedDot />
+              </div>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Input
+                  required
+                  style={styles.fullWidth}
+                  name="originFrom"
+                  placeholder={""}
+                  value={formData.originFrom}
+                  allowClear={true}
+                  onChange={handleChangeInput}
+                />
+              </div>
+            </FormElement>
+
+            <FormElement
+              error={
+                formError.dateOfBirth ? (
+                  <div style={{ marginBottom: "8px" }}>
+                    <Typography.Text type="danger">
+                      Input tanggal lahir terlebih dahulu
+                    </Typography.Text>
+                  </div>
+                ) : (
+                  <div />
+                )
+              }
             >
-              <Radio.Group name="gender" onChange={handleChangeInput}>
-                <Radio value={"Laki-laki"}>Laki-laki</Radio>
-                <Radio value={"Perempuan"}>Perempuan</Radio>
-              </Radio.Group>
-            </div>
-          </FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Tanggal Lahir</Typography.Text>
+                <RedDot />
+              </div>
 
-          <FormElement>
-            <div style={styles.labelContainer}>
-              <Typography.Text>Telepon</Typography.Text>
-              <RedDot />
-            </div>
-            <div style={{ display: "flex", flex: 1 }}>
-              <Input
-                required
-                style={styles.fullWidth}
-                name="phoneNumber"
-                placeholder={""}
-                value={formData.phoneNumber}
-                allowClear={true}
-                onChange={handleChangeInputNumber}
-              />
-            </div>
-          </FormElement>
+              <div style={{ display: "flex", flex: 1 }}>
+                <DatePicker
+                  style={styles.fullWidth}
+                  onChange={handleChangeBirthDate}
+                />
+              </div>
+            </FormElement>
 
-          <FormElement
-            error={
-              formError.lastEducation ? (
-                <div style={{ marginBottom: "8px" }}>
-                  <Typography.Text type="danger">
-                    Pilih pendidikan terakhir
-                  </Typography.Text>
-                </div>
-              ) : (
-                <div />
-              )
-            }
-          >
-            <div style={styles.labelContainer}>
-              <Typography.Text>Pendidikan Terakhir</Typography.Text>
-              <RedDot />
-            </div>
-
-            <div style={{ display: "flex", flex: 1 }}>
-              <Select
-                style={styles.fullWidth}
-                placeholder="Pilih pendidikan terakhir"
-                onChange={(value) => {
-                  setFormData((state) => ({
-                    ...state,
-                    lastEducation: value,
-                  }));
-                }}
-                name="lastEducation"
+            <FormElement
+              error={
+                formError.gender ? (
+                  <div>
+                    <Typography.Text type="danger">
+                      Jenis tidak boleh kosong
+                    </Typography.Text>
+                  </div>
+                ) : (
+                  <div />
+                )
+              }
+            >
+              <div style={styles.labelContainer}>
+                <Typography.Text>Jenis Kelamin</Typography.Text>
+                <RedDot />
+              </div>
+              <div
+                style={{ display: "flex", flex: 1 }}
+                flexJustifyContent="flex-start"
               >
-                {config.app.strataOptions.map((data) => (
-                  <Option value={data.value} key={data.key}>
-                    {data.label}
-                  </Option>
-                ))}
-              </Select>
-              {/* <Input
+                <Radio.Group name="gender" onChange={handleChangeInput}>
+                  <Radio value={"Laki-laki"}>Laki-laki</Radio>
+                  <Radio value={"Perempuan"}>Perempuan</Radio>
+                </Radio.Group>
+              </div>
+            </FormElement>
+
+            <FormElement>
+              <div style={styles.labelContainer}>
+                <Typography.Text>Telepon</Typography.Text>
+                <RedDot />
+              </div>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Input
+                  required
+                  style={styles.fullWidth}
+                  name="phoneNumber"
+                  placeholder={""}
+                  value={formData.phoneNumber}
+                  allowClear={true}
+                  onChange={handleChangeInputNumber}
+                />
+              </div>
+            </FormElement>
+
+            <FormElement
+              error={
+                formError.lastEducation ? (
+                  <div style={{ marginBottom: "8px" }}>
+                    <Typography.Text type="danger">
+                      Pilih pendidikan terakhir
+                    </Typography.Text>
+                  </div>
+                ) : (
+                  <div />
+                )
+              }
+            >
+              <div style={styles.labelContainer}>
+                <Typography.Text>Pendidikan Terakhir</Typography.Text>
+                <RedDot />
+              </div>
+
+              <div style={{ display: "flex", flex: 1 }}>
+                <Select
+                  style={styles.fullWidth}
+                  placeholder="Pilih pendidikan terakhir"
+                  onChange={(value) => {
+                    setFormData((state) => ({
+                      ...state,
+                      lastEducation: value,
+                    }));
+                  }}
+                  name="lastEducation"
+                >
+                  {config.app.strataOptions.map((data) => (
+                    <Option value={data.value} key={data.key}>
+                      {data.label}
+                    </Option>
+                  ))}
+                </Select>
+                {/* <Input
                 style={styles.fullWidth}
                 name='lastEducation'
                 placeholder={''}
@@ -570,105 +581,138 @@ function Submission(props) {
                 allowClear={true}
                 onChange={handleChangeInput}
               /> */}
+              </div>
+            </FormElement>
+
+            {showForm.showToefl && (
+              <>
+                {" "}
+                <FormElement>
+                  <div style={styles.labelContainer}>
+                    <Typography.Text>Nilai TOEFL</Typography.Text>
+                  </div>
+                  <div style={{ display: "flex", flex: 1 }}>
+                    <Input
+                      required
+                      style={styles.fullWidth}
+                      name="toeflScore"
+                      placeholder={""}
+                      value={formData.toeflScore}
+                      allowClear={true}
+                      onChange={handleChangeTOEFL}
+                    />
+                  </div>
+                </FormElement>
+                <FormElement>
+                  <div style={styles.labelContainer}>
+                    <Typography.Text>Bukti TOEFL</Typography.Text>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <Upload
+                        accept=".pdf"
+                        name="toeflFile"
+                        onChange={(e) => inputHandlerFile(e, "toeflFile")}
+                      >
+                        <Button>Upload</Button>
+                      </Upload>
+                    </div>
+                    <Typography.Text type="danger">
+                      * Hanya menerima sertifikat TOEFL/IELTS Telkom
+                    </Typography.Text>
+                  </div>
+                </FormElement>
+              </>
+            )}
+
+            {showForm.show360 && (
+              <>
+                <FormElement>
+                  <div style={styles.labelContainer}>
+                    <Typography.Text>Nilai Tes 360</Typography.Text>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Input
+                      required
+                      style={styles.fullWidth}
+                      name="_360Score"
+                      value={formData._360Score}
+                      allowClear={true}
+                      onChange={handleChange360Score}
+                    />
+                    <Typography.Text type="danger">* Jika ada</Typography.Text>
+                  </div>
+                </FormElement>
+
+                <FormElement>
+                  <div style={styles.labelContainer}>
+                    <Typography.Text>Bukti Tes 360</Typography.Text>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <Upload
+                        accept=".pdf"
+                        name="_360File"
+                        onChange={(e) => inputHandlerFile(e, "_360File")}
+                      >
+                        <Button>Upload</Button>
+                      </Upload>
+                    </div>
+                    <Typography.Text type="danger">* Jika ada</Typography.Text>
+                  </div>
+                </FormElement>
+              </>
+            )}
+          </div>
+          <div style={{ marginLeft: 24, width: "150px" }}>
+            <div style={{ width: "150" }}>
+              <Avatar
+                icon={<UserOutlined />}
+                src={previewImage ? previewImage : null}
+                shape="square"
+                size={150}
+              />
+              <div style={{ marginTop: 8 }}>
+                {formError.profilePicture && (
+                  <div style={{ marginBottom: "8px" }}>
+                    <Typography.Text type="danger">
+                      Upload foto terlebih dahulu
+                    </Typography.Text>
+                  </div>
+                )}
+                <Upload
+                  name="picture"
+                  accept="image/*"
+                  onChange={inputHandlerPicture}
+                >
+                  <Button>
+                    <UploadOutlined /> Upload Foto
+                  </Button>
+                </Upload>
+              </div>
             </div>
-          </FormElement>
 
-          {showForm.showToefl && (
-            <>
-              {" "}
-              <FormElement>
-                <div style={styles.labelContainer}>
-                  <Typography.Text>Nilai TOEFL</Typography.Text>
-                </div>
-                <div style={{ display: "flex", flex: 1 }}>
-                  <Input
-                    required
-                    style={styles.fullWidth}
-                    name="toeflScore"
-                    placeholder={""}
-                    value={formData.toeflScore}
-                    allowClear={true}
-                    onChange={handleChangeTOEFL}
-                  />
-                </div>
-              </FormElement>
-              <FormElement>
-                <div style={styles.labelContainer}>
-                  <Typography.Text>Bukti TOEFL</Typography.Text>
-                </div>
-                <div
-                  style={{ display: "flex", flex: 1, flexDirection: "column" }}
-                >
-                  <div>
-                    <Upload
-                      accept=".pdf"
-                      name="toeflFile"
-                      onChange={(e) => inputHandlerFile(e, "toeflFile")}
-                    >
-                      <Button>Upload</Button>
-                    </Upload>
-                  </div>
-                  <Typography.Text type="danger">
-                    * Hanya menerima sertifikat TOEFL/IELTS Telkom
-                  </Typography.Text>
-                </div>
-              </FormElement>
-            </>
-          )}
-
-          {showForm.show360 && (
-            <>
-              <FormElement>
-                <div style={styles.labelContainer}>
-                  <Typography.Text>Nilai Tes 360</Typography.Text>
-                </div>
-                <div
-                  style={{ display: "flex", flex: 1, flexDirection: "column" }}
-                >
-                  <Input
-                    required
-                    style={styles.fullWidth}
-                    name="_360Score"
-                    value={formData._360Score}
-                    allowClear={true}
-                    onChange={handleChange360Score}
-                  />
-                  <Typography.Text type="danger">* Jika ada</Typography.Text>
-                </div>
-              </FormElement>
-
-              <FormElement>
-                <div style={styles.labelContainer}>
-                  <Typography.Text>Bukti Tes 360</Typography.Text>
-                </div>
-                <div
-                  style={{ display: "flex", flex: 1, flexDirection: "column" }}
-                >
-                  <div>
-                    <Upload
-                      accept=".pdf"
-                      name="_360File"
-                      onChange={(e) => inputHandlerFile(e, "_360File")}
-                    >
-                      <Button>Upload</Button>
-                    </Upload>
-                  </div>
-                  <Typography.Text type="danger">* Jika ada</Typography.Text>
-                </div>
-              </FormElement>
-            </>
-          )}
-        </div>
-        <div style={{ marginLeft: 24, width: "150px" }}>
-          <div style={{ width: "150" }}>
-            <Avatar
-              icon={<UserOutlined />}
-              src={previewImage ? previewImage : null}
-              shape="square"
-              size={150}
-            />
-            <div style={{ marginTop: 8 }}>
-              {formError.profilePicture && (
+            <div style={{ marginTop: 16 }}>
+              <Typography.Text>Dokumen Lainnya</Typography.Text>
+              {formError.cvFile && (
                 <div style={{ marginBottom: "8px" }}>
                   <Typography.Text type="danger">
                     Upload foto terlebih dahulu
@@ -676,37 +720,17 @@ function Submission(props) {
                 </div>
               )}
               <Upload
+                accept=".pdf"
                 name="picture"
-                accept="image/*"
-                onChange={inputHandlerPicture}
+                onChange={(e) => inputHandlerFile(e, "cvFile")}
               >
-                <Button>
-                  <UploadOutlined /> Upload Foto
-                </Button>
+                <Button>Upload CV</Button>
               </Upload>
             </div>
           </div>
-
-          <div style={{ marginTop: 16 }}>
-            <Typography.Text>Dokumen Lainnya</Typography.Text>
-            {formError.cvFile && (
-              <div style={{ marginBottom: "8px" }}>
-                <Typography.Text type="danger">
-                  Upload foto terlebih dahulu
-                </Typography.Text>
-              </div>
-            )}
-            <Upload
-              accept=".pdf"
-              name="picture"
-              onChange={(e) => inputHandlerFile(e, "cvFile")}
-            >
-              <Button>Upload CV</Button>
-            </Upload>
-          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </Fragment>
   );
 }
 
