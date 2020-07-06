@@ -1,22 +1,19 @@
 import React, { Fragment } from "react";
 import axios from "axios";
 import { message, Empty, Skeleton, Alert } from "antd";
-import { useHistory, useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import PositionList from "./PositionList";
 import { AppContext } from "../context/AppContext";
-import { TIMELINES_API, POSITIONS_API, config } from "../config";
+import { TIMELINES_API, POSITIONS_API } from "../config";
 import { formatDate } from "../utils";
 
 function PeriodeDetail() {
   const { appState, dispatchApp } = React.useContext(AppContext);
   const [data, setData] = React.useState({});
   const params = useParams();
-  const location = useLocation();
   const today = new Date().setHours(0, 0, 0, 0);
   const endDate = (data && new Date(data.endDate).setHours(0, 0, 0, 0)) || null;
-
-  console.log("ℹ️ data:=", data);
 
   const handleFetchTimelineDetails = async () => {
     try {
@@ -56,8 +53,6 @@ function PeriodeDetail() {
 
   React.useEffect(
     () => {
-      console.log(today, "this is today");
-      console.log(endDate, "this is");
       handleFetchTimelineDetails();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

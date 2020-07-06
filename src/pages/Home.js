@@ -1,16 +1,15 @@
 import React, { Fragment } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Typography, Button, message, Empty, Skeleton } from "antd";
 import axios from "axios";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import { AppContext } from "../context/AppContext";
-import { TIMELINES_API, config } from "../config";
+import { TIMELINES_API } from "../config";
 import { formatDate } from "../utils";
 
 function Home() {
   const { appState, dispatchApp } = React.useContext(AppContext);
-  const history = useHistory();
 
   const handleFetchTimelines = async () => {
     try {
@@ -20,7 +19,6 @@ function Home() {
       const result = response.data;
 
       if (result.success) {
-        console.log(result.data, "TRASDSADSADSAD");
         dispatchApp({
           type: "FETCH_TIMELINES_SUCCESS",
           payload: { dataTimelines: result.data },

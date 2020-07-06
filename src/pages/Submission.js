@@ -164,19 +164,6 @@ function Submission(props) {
       uploadFilePicture(fileData);
       setPreviewImage(URL.createObjectURL(e.file.originFileObj));
     } catch (error) {}
-    // if (e.target.files[0].name.match(/\.(jpg|jpeg|png|gif)$/)) {
-    //   if (e.target.files[0].size > 2097152) {
-    //     message('Upps, your file is too big, maximum filesize 2 Mb')
-    //   } else {
-    //     setPreviewImage(URL.createObjectURL(e.target.files[0]))
-    //     setFormData(state => ({
-    //       ...state,
-    //       profilePicture: e.target.files[0],
-    //     }))
-    //   }
-    // } else {
-    //   message('Upps, only file jpg, jpeg, png, and gif allowed')
-    // }
   };
 
   const uploadFilePicture = async (file) => {
@@ -192,9 +179,7 @@ function Submission(props) {
           profilePicture: url,
         }));
       })
-      .catch((error) => {
-        console.log(error, "this error from submission");
-      })
+      .catch((error) => {})
       .finally(() => {
         setTimeout(() => {
           setIsUploading(false);
@@ -271,8 +256,6 @@ function Submission(props) {
       }
       if (result.success) {
         history.push("/success");
-        // handleFetchStudyPrograms();
-        // setShowModal(false);
       } else {
         throw new Error(result.errors);
       }
