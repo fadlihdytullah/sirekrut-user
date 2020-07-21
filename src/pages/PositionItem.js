@@ -6,11 +6,13 @@ import { Link } from "react-router-dom";
 function PositionItem(props) {
   const [showModal, setShowModal] = React.useState(false);
 
+  console.log("Props", props);
+
   return (
     <Fragment>
       <Modal
         width={720}
-        title="Detail Informasi Posisi"
+        title='Detail Informasi Posisi'
         visible={showModal}
         onCancel={() => setShowModal(false)}
         footer={[
@@ -33,12 +35,12 @@ function PositionItem(props) {
               },
             }}
           >
-            <Button type="primary" disabled={props.disableButton}>
+            <Button type='primary' disabled={props.disableButton}>
               Submit
             </Button>
           </Link>,
         ]}
-        cancelText="Kembali"
+        cancelText='Kembali'
       >
         <Typography.Title level={3}>{props.data.title}</Typography.Title>
         <div style={{ display: "flex" }}>
@@ -59,8 +61,18 @@ function PositionItem(props) {
         <div style={{ display: "flex" }}>
           <div style={{ width: "200px" }}>Program Studi</div>
           <div>
-            : D3 Teknik Informatika, D3 Manajemen Informatika <br />{" "}
-            <Typography.Paragraph type="danger">
+            {props.data.studyPrograms &&
+            Array.isArray(props.data.studyPrograms) ? (
+              <div>
+                :{" "}
+                {props.data.studyPrograms.map((item) => (
+                  <Typography.Text>{item.name}</Typography.Text>
+                ))}
+              </div>
+            ) : (
+              <Typography.Text>: Semua</Typography.Text>
+            )}
+            <Typography.Paragraph type='danger'>
               * Pelamar harus lulusan dari salah satu program studi diatas.
             </Typography.Paragraph>
           </div>
@@ -79,7 +91,7 @@ function PositionItem(props) {
 
         <div>
           <Typography.Text
-            type="secondary"
+            type='secondary'
             style={{ fontSize: ".75rem", display: "block" }}
           >
             Quota
@@ -89,7 +101,7 @@ function PositionItem(props) {
 
         <div>
           <Typography.Text
-            type="secondary"
+            type='secondary'
             style={{ fontSize: ".75rem", display: "block" }}
           >
             Minimum IPK
@@ -99,7 +111,7 @@ function PositionItem(props) {
 
         <div>
           <Typography.Text
-            type="secondary"
+            type='secondary'
             style={{ fontSize: ".75rem", display: "block" }}
           >
             Minimum Lulusan
@@ -109,7 +121,7 @@ function PositionItem(props) {
 
         <div>
           <Button
-            type="dashed"
+            type='dashed'
             onClick={() => {
               setShowModal(true);
             }}
@@ -131,7 +143,7 @@ function PositionItem(props) {
               },
             }}
           >
-            <Button type="primary" disabled={props.disableButton}>
+            <Button type='primary' disabled={props.disableButton}>
               Submit
             </Button>
           </Link>
