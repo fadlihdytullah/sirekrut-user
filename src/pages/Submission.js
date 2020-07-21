@@ -84,9 +84,12 @@ const initFormData = () => ({
   score: {
     academicScore: 0,
     psikotesScore: 0,
+    microteachingScore: 0,
     interviewScore: 0,
+    orientationScore: 0,
   },
   passed: false,
+  determination: false,
   positionId: "",
   periodId: "",
 });
@@ -351,8 +354,8 @@ function Submission(props) {
             Formulir Administrasi
           </Typography.Title>
           <Button
-            htmlType="submit"
-            type="primary"
+            htmlType='submit'
+            type='primary'
             disabled={isSubmitting | isUploading}
           >
             Kirim Lamaran
@@ -383,7 +386,7 @@ function Submission(props) {
                 <Input
                   required
                   style={styles.fullWidth}
-                  name="fullName"
+                  name='fullName'
                   placeholder={""}
                   value={formData.fullName}
                   allowClear={true}
@@ -402,10 +405,10 @@ function Submission(props) {
                 <Input
                   required
                   style={styles.fullWidth}
-                  name="email"
+                  name='email'
                   placeholder={""}
                   value={formData.email}
-                  type="email"
+                  type='email'
                   allowClear={true}
                   onChange={handleChangeInput}
                 />
@@ -421,7 +424,7 @@ function Submission(props) {
                 <Input
                   required
                   style={styles.fullWidth}
-                  name="address"
+                  name='address'
                   placeholder={""}
                   value={formData.address}
                   allowClear={true}
@@ -439,7 +442,7 @@ function Submission(props) {
                 <Input
                   required
                   style={styles.fullWidth}
-                  name="originFrom"
+                  name='originFrom'
                   placeholder={""}
                   value={formData.originFrom}
                   allowClear={true}
@@ -452,7 +455,7 @@ function Submission(props) {
               error={
                 formError.dateOfBirth ? (
                   <div style={{ marginBottom: "8px" }}>
-                    <Typography.Text type="danger">
+                    <Typography.Text type='danger'>
                       Input tanggal lahir terlebih dahulu
                     </Typography.Text>
                   </div>
@@ -478,7 +481,7 @@ function Submission(props) {
               error={
                 formError.gender ? (
                   <div>
-                    <Typography.Text type="danger">
+                    <Typography.Text type='danger'>
                       Jenis tidak boleh kosong
                     </Typography.Text>
                   </div>
@@ -493,9 +496,9 @@ function Submission(props) {
               </div>
               <div
                 style={{ display: "flex", flex: 1 }}
-                flexJustifyContent="flex-start"
+                flexJustifyContent='flex-start'
               >
-                <Radio.Group name="gender" onChange={handleChangeInput}>
+                <Radio.Group name='gender' onChange={handleChangeInput}>
                   <Radio value={"Laki-laki"}>Laki-laki</Radio>
                   <Radio value={"Perempuan"}>Perempuan</Radio>
                 </Radio.Group>
@@ -511,7 +514,7 @@ function Submission(props) {
                 <Input
                   required
                   style={styles.fullWidth}
-                  name="phoneNumber"
+                  name='phoneNumber'
                   placeholder={""}
                   value={formData.phoneNumber}
                   allowClear={true}
@@ -524,7 +527,7 @@ function Submission(props) {
               error={
                 formError.lastEducation ? (
                   <div style={{ marginBottom: "8px" }}>
-                    <Typography.Text type="danger">
+                    <Typography.Text type='danger'>
                       Pilih pendidikan terakhir
                     </Typography.Text>
                   </div>
@@ -541,14 +544,14 @@ function Submission(props) {
               <div style={{ display: "flex", flex: 1 }}>
                 <Select
                   style={styles.fullWidth}
-                  placeholder="Pilih pendidikan terakhir"
+                  placeholder='Pilih pendidikan terakhir'
                   onChange={(value) => {
                     setFormData((state) => ({
                       ...state,
                       lastEducation: value,
                     }));
                   }}
-                  name="lastEducation"
+                  name='lastEducation'
                 >
                   {config.app.strataOptions.map((data) => (
                     <Option value={data.value} key={data.key}>
@@ -578,7 +581,7 @@ function Submission(props) {
                     <Input
                       required
                       style={styles.fullWidth}
-                      name="toeflScore"
+                      name='toeflScore'
                       placeholder={""}
                       value={formData.toeflScore}
                       allowClear={true}
@@ -599,14 +602,14 @@ function Submission(props) {
                   >
                     <div>
                       <Upload
-                        accept=".pdf"
-                        name="toeflFile"
+                        accept='.pdf'
+                        name='toeflFile'
                         onChange={(e) => inputHandlerFile(e, "toeflFile")}
                       >
                         <Button>Upload</Button>
                       </Upload>
                     </div>
-                    <Typography.Text type="danger">
+                    <Typography.Text type='danger'>
                       * Hanya menerima sertifikat TOEFL/IELTS Telkom
                     </Typography.Text>
                   </div>
@@ -630,12 +633,12 @@ function Submission(props) {
                     <Input
                       required
                       style={styles.fullWidth}
-                      name="_360Score"
+                      name='_360Score'
                       value={formData._360Score}
                       allowClear={true}
                       onChange={handleChange360Score}
                     />
-                    <Typography.Text type="danger">* Jika ada</Typography.Text>
+                    <Typography.Text type='danger'>* Jika ada</Typography.Text>
                   </div>
                 </FormElement>
 
@@ -652,14 +655,14 @@ function Submission(props) {
                   >
                     <div>
                       <Upload
-                        accept=".pdf"
-                        name="_360File"
+                        accept='.pdf'
+                        name='_360File'
                         onChange={(e) => inputHandlerFile(e, "_360File")}
                       >
                         <Button>Upload</Button>
                       </Upload>
                     </div>
-                    <Typography.Text type="danger">* Jika ada</Typography.Text>
+                    <Typography.Text type='danger'>* Jika ada</Typography.Text>
                   </div>
                 </FormElement>
               </>
@@ -670,20 +673,20 @@ function Submission(props) {
               <Avatar
                 icon={<UserOutlined />}
                 src={previewImage ? previewImage : null}
-                shape="square"
+                shape='square'
                 size={150}
               />
               <div style={{ marginTop: 8 }}>
                 {formError.profilePicture && (
                   <div style={{ marginBottom: "8px" }}>
-                    <Typography.Text type="danger">
+                    <Typography.Text type='danger'>
                       Upload foto terlebih dahulu
                     </Typography.Text>
                   </div>
                 )}
                 <Upload
-                  name="picture"
-                  accept="image/*"
+                  name='picture'
+                  accept='image/*'
                   onChange={inputHandlerPicture}
                 >
                   <Button>
@@ -697,14 +700,14 @@ function Submission(props) {
               <Typography.Text>Dokumen Lainnya</Typography.Text>
               {formError.cvFile && (
                 <div style={{ marginBottom: "8px" }}>
-                  <Typography.Text type="danger">
+                  <Typography.Text type='danger'>
                     Upload foto terlebih dahulu
                   </Typography.Text>
                 </div>
               )}
               <Upload
-                accept=".pdf"
-                name="picture"
+                accept='.pdf'
+                name='picture'
                 onChange={(e) => inputHandlerFile(e, "cvFile")}
               >
                 <Button>Upload CV</Button>
