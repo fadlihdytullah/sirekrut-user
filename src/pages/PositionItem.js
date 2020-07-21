@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 function PositionItem(props) {
   const [showModal, setShowModal] = React.useState(false);
 
-  console.log("Props", props);
-
   return (
     <Fragment>
       <Modal
@@ -27,10 +25,9 @@ function PositionItem(props) {
               pathname: "/submission",
               state: {
                 data: {
-                  periodID: "izxc78dsax2",
-                  periodName: "Rekrutasi Staff",
-                  positionID: "34zcas34",
-                  positionName: "Staff IT Sisfo",
+                  periodID: props.data.periodId,
+                  positionID: props.data.id,
+                  positionName: props.data.title,
                 },
               },
             }}
