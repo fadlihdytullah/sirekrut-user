@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 function PositionItem(props) {
   const [showModal, setShowModal] = React.useState(false);
 
-  console.log("PROPS>>>", props);
-
   return (
     <Fragment>
       <Modal
